@@ -1,0 +1,11 @@
+getPlaybackFrame(deltaTime) {
+    if (!this.isPlaying || this.frames.length === 0) return null;
+
+    this.playbackTime += deltaTime;
+    
+    if (this.totalDuration > 0 && this.playbackTime >= this.totalDuration) {
+        this.playbackTime %= this.totalDuration;
+    }
+    
+    let cumulativeTime = 0;
+

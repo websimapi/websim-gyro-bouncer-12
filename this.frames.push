@@ -1,0 +1,8 @@
+finalize() {
+    this.totalDuration = this.frames.reduce((total, frame) => total + frame.dt, 0);
+}
+
+startPlayback() {
+    if (this.frames.length === 0) return;
+    this.isPlaying = true;
+
