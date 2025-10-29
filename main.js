@@ -47,7 +47,16 @@ async function preload() {
                 alert("Your avatar could not be loaded. Please try again or check your profile picture.");
             }
         } else {
-            avatarLoadFailed = true;
+            // Check for avatar on peersUpdate as a fallback
+            room.events.on('peersUpdate', (peers) => {
+                const updatedClient = peers[room.clientId];
+                if (updatedClient && updatedClient.avatarUrl && !userAvatarImg && !avatarLoadFailed) {
+                     loadImageWithProxies(updatedClient.avatarUrl).then(img => {
+                        if(img) userAvatarImg = img;
+                     });
+                }
+            });
+            avatarLoadFailed = true; // Assume failure until proven otherwise
             alert("You don't seem to have a profile picture. Please set one to play.");
         }
     } catch (e) {
