@@ -77,26 +77,26 @@ window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
 async function loadImageWithProxies(url) {
-    const proxies = [
-        '', // Direct attempt first
-        'https://api.allorigins.win/raw?url=',
-        'https://corsproxy.io/?',
+    const urlsToTry = [
+        url, // Direct attempt first
+        `https://corsproxy.io/?${url}`,
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+        `https://thingproxy.freeboard.io/fetch/${url}`,
     ];
 
-    for (const proxy of proxies) {
-        const proxyUrl = proxy + url;
+    for (const proxyUrl of urlsToTry) {
         try {
             const img = new Image();
             img.crossOrigin = "anonymous"; // Always set for cross-origin images to prevent canvas tainting
             await new Promise((resolve, reject) => {
                 img.onload = resolve;
-                img.onerror = reject;
+                img.onerror = () => reject(new Error(`Failed to load image from ${proxyUrl}`));
                 img.src = proxyUrl;
             });
             console.log(`Successfully loaded image from: ${proxyUrl}`);
             return img;
         } catch (error) {
-            console.warn(`Failed to load image from: ${proxyUrl}`, error);
+            console.warn(error.message);
         }
     }
     return null;
